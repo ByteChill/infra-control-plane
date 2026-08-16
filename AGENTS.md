@@ -79,3 +79,17 @@ If implementation and documentation disagree, determine which is stale and updat
 5. Update docs when behavior or architecture changes.
 6. Review the diff for accidental scope expansion.
 7. Never claim an external operation succeeded without a confirmed result.
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as local Markdown files under `.scratch/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The default triage label vocabulary is used. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Domain documentation uses a single-context layout. See `docs/agents/domain.md`.
