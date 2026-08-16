@@ -7,6 +7,15 @@ An agent-native internal platform for managing infrastructure assets, discovered
 - [`PLAN.md`](PLAN.md) — phased implementation plan and exit criteria.
 - [`TODO.md`](TODO.md) — actionable implementation checklist.
 - [`docs/development.md`](docs/development.md) — development roadmap.
+- [`frontend/README.md`](frontend/README.md) — frontend setup and conventions.
+- [`backend/README.md`](backend/README.md) — backend setup and conventions.
+
+## Documentation boundaries
+
+README files describe the product, runtime architecture, and local development
+entry points. Agent instructions, domain invariants, and implementation
+specifications live in [`AGENTS.md`](AGENTS.md) and [`docs/`](docs/). Read the
+relevant document before changing code or architecture.
 
 ## Product shape
 
@@ -22,22 +31,27 @@ Workflow is a platform capability, not a Road capability. Road is one external s
 
 ### Frontend
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- shadcn/ui
-- Beautiful UI
-- TanStack Query
-- TanStack Table
-- TanStack Router
-- React Hook Form
-- Zod
-- Zustand
-- Framer Motion
-- Lucide
+- React + TypeScript + Vite
+- UI: Tailwind CSS, shadcn/ui, Beautiful UI
+- Data: TanStack Query, TanStack Table
+- Routing: TanStack Router
+- UI-only state: Zustand
+- Forms: React Hook Form, Zod
+- Animation: Framer Motion
+- Icons: Lucide
+- Realtime: SSE
 
 **Next.js is intentionally not used.**
+
+Component and state ownership are explicit:
+
+- **shadcn/ui** is the base design system.
+- **Beautiful UI** provides higher-level interaction and visual components,
+  especially Diff, task, approval, table, and search experiences.
+- **TanStack Query** owns server state; do not duplicate it in Zustand.
+- **TanStack Table** powers large Asset and Resource data tables.
+- **SSE** delivers workflow execution updates and dynamic logs.
+- **Framer Motion** is limited to purposeful page, state, and workflow motion.
 
 ### Backend
 
@@ -55,6 +69,28 @@ Prefer AWS managed services where appropriate.
 - Long-running workflows → AWS Step Functions
 - Worker/integration tasks → Lambda and/or ECS
 - Persistent data → PostgreSQL
+
+## System architecture
+
+```text
+React + Vite SPA
+      │
+      │ HTTPS / SSE
+      ▼
+FastAPI on ECS/Fargate
+      │
+      ├── PostgreSQL
+      ├── AWS Step Functions
+      │      ├── Lambda
+      │      └── ECS
+      ├── GitHub App
+      ├── Road API
+      └── AWS / GCP / Ali / IKP APIs
+```
+
+The frontend is deployed as static assets through S3 and CloudFront. FastAPI
+handles synchronous APIs and launches long-running operations as Workflow
+executions; Step Functions orchestrates their asynchronous work.
 
 ## Domain vocabulary
 
